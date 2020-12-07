@@ -1,9 +1,10 @@
 import { StatusBar } from 'expo-status-bar';
-import React from 'react';
+import React ,{ useState} from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { useNavigation } from "@react-navigation/native"; 
+import { useNavigation } from "@react-navigation/native";
 
-export  function HomeScreen() {
+
+export function SignupScreen() {
     const navigation = useNavigation();
     const back = () => {
         navigation.goBack();
