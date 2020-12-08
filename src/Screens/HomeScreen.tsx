@@ -245,6 +245,7 @@ import {
                             </TouchableOpacity>
                         </SafeAreaView>
         );
+        
                     }
     
 const styles = StyleSheet.create({

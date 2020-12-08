@@ -19,6 +19,7 @@ import {
     TextInput,
     TouchableOpacity,
     Dimensions,
+    Pressable
 } from 'react-native';
 
 
@@ -100,6 +101,43 @@ export  function PostImageScreen({ navigation }: Props) {
             </TouchableOpacity>
         );
     }
+
+//カメラロール挑戦
+
+    interface SelectedImageInfo { //型を定義
+        localUri: string;
+    }
+    // undefinedは元々なくて、nullは空
+    const [selectedImage, setSelectedImage] = React.useState<SelectedImageInfo | undefined>();
+
+    let openImagePickerAsync = async () => {
+        let permissionResult = await ImagePicker.requestCameraRollPermissionsAsync();
+
+        if (permissionResult.granted === false) {
+            alert("カメラロールへのアクセス許可が必要です！");
+            return;
+        }
+
+        // 非同期処理(async,await)とは順に処理するのではなく、順番を待たずにどんどん処理(準備)を始めること。
+        // リクエストなどに時間がかかった際にそれを待たずに処理ができる強みがある
+        let pickerResult = await ImagePicker.launchImageLibraryAsync();
+        // console.log(pickerResult);
+        if (pickerResult.cancelled === true) {
+            return;
+        } else {
+            const selectedUri = {};
+            console.log(pickerResult);
+            setSelectedImage({ localUri: pickerResult.uri });
+        }
+    };
+
+    
+    
+
+
+
+
+
     return (
         <KeyboardAwareScrollView>
             <View style={styles.container}>
@@ -136,6 +174,12 @@ export  function PostImageScreen({ navigation }: Props) {
                     title="Back"
                     onPress={() => navigation.goBack()}
                 />
+                <Pressable
+                    onPress={openImagePickerAsync} style={styles.button}>
+                    <Text style={styles.buttonText}>
+                        Pick a photo
+        </Text>
+                </Pressable>
             </View>
         </KeyboardAwareScrollView >
     );
@@ -209,4 +253,10 @@ const styles = StyleSheet.create({
     buttonText: {
         fontSize: 20,
     },
+    button: {
+        backgroundColor: "blue",
+        padding: 20,
+        borderRadius: 5,
+    },
+
 });
