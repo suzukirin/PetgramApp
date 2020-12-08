@@ -5,7 +5,8 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import "react-native-gesture-handler";
 //Screens.tsでまとめたものをimport
-import { HomeScreen, SigninScreen, SignupScreen } from "./src/Screens/Screens";
+import { HomeScreen, SigninScreen, SignupScreen, PostImageScreen} from "./src/Screens/Screens";
+import "./src/Fire"; 
 
 const Stack = createStackNavigator<RootStackParamList>();
 export default function App() {
@@ -23,6 +24,12 @@ export default function App() {
           component={SignupScreen}
           options={{ headerShown: false }}
         />
+        <Stack.Screen
+          name="PostImage"
+          component={PostImageScreen}
+          options={{ headerShown: false }}
+        />
+
       </Stack.Navigator>
     </NavigationContainer>
   );
