@@ -30,6 +30,8 @@ type Props = {
 const screenWidth = Dimensions.get('screen').width
 
 
+
+
 export  function PostImageScreen({ navigation }: Props) {
     const [titleText, setTitleText] = useState('')
     const [pictureURI, setPictureURI] = useState('');
