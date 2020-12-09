@@ -103,7 +103,6 @@ export  function PostImageScreen({ navigation }: Props) {
     }
 
 //カメラロール挑戦
-
     interface SelectedImageInfo { //型を定義
         localUri: string;
     }
@@ -118,8 +117,6 @@ export  function PostImageScreen({ navigation }: Props) {
             return;
         }
 
-        // 非同期処理(async,await)とは順に処理するのではなく、順番を待たずにどんどん処理(準備)を始めること。
-        // リクエストなどに時間がかかった際にそれを待たずに処理ができる強みがある
         let pickerResult = await ImagePicker.launchImageLibraryAsync();
         // console.log(pickerResult);
         if (pickerResult.cancelled === true) {
@@ -131,16 +128,20 @@ export  function PostImageScreen({ navigation }: Props) {
         }
     };
 
-    
-    
-
-
-
-
-
     return (
         <KeyboardAwareScrollView>
             <View style={styles.container}>
+                
+                <Pressable
+                    onPress={openImagePickerAsync} style={styles.button}>
+                    <Text style={styles.buttonText}>
+                        Pick a photo
+                    </Text>
+                </Pressable>
+
+                <View style={styles.previewContainer}>
+                    {pictureURI ? <Preview /> : <Camera />}
+                </View>
                 <KeyboardAvoidingView
                     style={styles.titleInputConatiner}
                     behavior={Platform.OS == 'ios' ? 'padding' : 'height'}
@@ -148,14 +149,12 @@ export  function PostImageScreen({ navigation }: Props) {
 
                     <TextInput
                         style={styles.titleInput}
-                        placeholder="タイトル"
+                        placeholder="キャプションを入力"
+                        multiline
                         onChangeText={value => setTitleText(value)}
-                        maxLength={100}
+                        maxLength={140}
                     />
                 </KeyboardAvoidingView>
-                <View style={styles.previewContainer}>
-                    {pictureURI ? <Preview /> : <Camera />}
-                </View>
                 <View style={styles.buttonContainer}>
                     <TouchableOpacity
                         style={styles.saveButton}
@@ -174,12 +173,6 @@ export  function PostImageScreen({ navigation }: Props) {
                     title="Back"
                     onPress={() => navigation.goBack()}
                 />
-                <Pressable
-                    onPress={openImagePickerAsync} style={styles.button}>
-                    <Text style={styles.buttonText}>
-                        Pick a photo
-        </Text>
-                </Pressable>
             </View>
         </KeyboardAwareScrollView >
     );

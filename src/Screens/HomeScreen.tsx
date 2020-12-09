@@ -2,7 +2,7 @@ import { StatusBar as ExpoStatusBar } from 'expo-status-bar';
 import { useNavigation, RouteProp } from "@react-navigation/native";
 // import { StackNavigationProp } from '@react-navigation/stack';
 import React, { useState, useEffect } from 'react';
-import { useFocusEffect } from '@react-navigation/native';
+import { useFocusEffect  } from '@react-navigation/native';
 import { loadPictureInfoListAsync, removePictureInfoAsync } from './Store';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import * as ImagePicker from 'expo-image-picker';
@@ -25,6 +25,7 @@ import {
     Dimensions,
     Image,
     ListRenderItemInfo,
+    Pressable,
 } from 'react-native';
 
 
@@ -39,6 +40,7 @@ import {
         };
         
         
+
     export  function HomeScreen(props: Props) {
                 const currentUser = props.route.params.user;
 
@@ -121,7 +123,7 @@ import {
                 //ナビゲーションヘッダーの左側に配置
                 React.useLayoutEffect(() => {
                     navigation.setOptions({
-                        headerLeft: () => (
+                        headerRight: () => (
                             <TouchableOpacity
                                 onPress={() => {
                                     pressedSignOut();
@@ -203,9 +205,9 @@ import {
                     return (
                         <TouchableOpacity onLongPress={() => handleLongPressPicture(item)}>
                             <View style={styles.pictureInfoContainer}>
-                                <Text style={styles.pictureTitle}>{item.title}</Text>
                                 <Image style={styles.picture} source={{ uri: item.uri }} />
-                                <Text style={styles.timestamp}>撮影日時: {moment(item.createdAt).format('YYYY/MM/DD HH:mm:ss')}</Text>
+                                <Text style={styles.pictureTitle}>{item.title}</Text>
+                                {/* <Text style={styles.timestamp}>撮影日時: {moment(item.createdAt).format('YYYY/MM/DD HH:mm:ss')}</Text> */}
                             </View>
                         </TouchableOpacity>
                     )
@@ -229,9 +231,9 @@ import {
                         </View>
                         )            
                     };
-                    return (
+                        return (
                         <SafeAreaView >
-                        <Text> ログイン中</Text>
+                        {/* <Text> ログイン中</Text> */}
                             <FlatList
                                 data={pictureInfoList}
                                 renderItem={renderPictureInfo}
@@ -239,11 +241,12 @@ import {
                             />
                             <TouchableOpacity
                                 style={styles.addButton}
-                                onPress={handleAddButton}
-                            >
+                                onPress={handleAddButton}>
                                 <Icon style={styles.addButtonIcon} name="plus" size={50} />
                             </TouchableOpacity>
+                            
                         </SafeAreaView>
+                
         );
         
                     }
@@ -286,9 +289,12 @@ const styles = StyleSheet.create({
         borderRadius: 40,
         alignItems: 'center',
         justifyContent: 'center',
+
     },
     addButtonIcon: {
         color: '#fff',
-    }
+    },
+    
+
 });
     

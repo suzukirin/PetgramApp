@@ -21,3 +21,6 @@ type Message = {
     userId: string;
 };
 
+interface SelectedImageInfo { //型を定義
+    localUri: string;
+}
