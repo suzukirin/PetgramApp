@@ -14,6 +14,7 @@ import {
 } from 'react-native';
 import { useNavigation } from "@react-navigation/native";
 import firebase from "firebase";
+import Icon from "react-native-vector-icons/FontAwesome";
 import { updateIdentifier } from "typescript";
 // import {fireConfig} from "../Fire";
 
@@ -23,7 +24,7 @@ export function SigninScreen() {
 
     const navigation = useNavigation();
     const toHome = (user: signedInUser) => {
-        navigation.navigate("Home", { user: user });
+        navigation.navigate("Main");
     };
     const toSignup = () => {
         navigation.navigate("SignUp");
@@ -39,7 +40,7 @@ export function SigninScreen() {
                 if (!user.user) throw new Error("user.user is empty");     //ユーザーネームがないよ
                 if (!user.user.email) throw new Error("user.user.email is empty");  //メアドがないよ
 
-                Alert.alert("サインイン成功！", "正常にサインインできました。");
+                // Alert.alert("サインイン成功！", "正常にサインインできました。");
                 //console.log(JSON.stringify(user));
 
                 const currentUser: signedInUser = {
@@ -78,7 +79,8 @@ export function SigninScreen() {
         <SafeAreaView style={styles.container}>
             <KeyboardAvoidingView style={styles.container}>
                 <View style={styles.titleAndFieldView}>
-                    <Text style={styles.screenTitle}>Sign In!</Text>
+                    <Text style={styles.screenTitle}>Petgram <Icon name="github" size={45} /></Text>
+                    {/* <Icon style={styles.addButtonIcon} name="plus" size={50} /> */}
                     <TextInput style={styles.inputField}
                         placeholder="メールアドレスを入力"
                         onChangeText={(email) => {  //ここの値は何でもいい 取ってきた値を渡す
@@ -103,14 +105,15 @@ export function SigninScreen() {
                 Submitボタンの方に登録処理して前の画面に戻る関数、
                 Backボタンには前の画面に戻るだけの関数 */}
                 <View style={styles.includeButtons}>
+                    <View style={styles.spacer}></View>
                     <Button
-                        title="Sign In"
+                        title="             ログイン             "
                         onPress={() => {
                             pressedSignIn(email, password);
                         }}
                     />
                     <View style={styles.spacer}></View>
-                    <Button title="SignUp"
+                    <Button title="新規登録"
                         onPress={() => {
                             toSignup();         //これだけでサインアップの画面に行ける
                         }}
@@ -136,10 +139,12 @@ const styles = StyleSheet.create({
         alignItems: "center",
         justifyContent: "center",
         flex: 3,
+        // flexDirection: "row"
     },
     screenTitle: {
         fontSize: 30,
         marginBottom: 50,
+        // fontFamily: 'Andika New Basic'
     },
     inputField: {
         width: "80%",
