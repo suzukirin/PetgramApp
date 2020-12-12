@@ -6,6 +6,7 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import firebase from "firebase";
 import { TouchableOpacity, View, Text, StyleSheet } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import ProfileStackNavigation from './ProfileStackNavigation'
 const Tab = createBottomTabNavigator<MainTabParamList>();
 
 type MainTabRouteProps = RouteProp<RootStackParamList, "Main">;
@@ -56,7 +57,8 @@ export default function MainTabNaigator(props: Props) {
         <Tab.Navigator>
             <Tab.Screen name="Home" component={HomeScreen} initialParams={{user : currentUser}}/>
             <Tab.Screen name="PostImage" component={PostImageScreen} initialParams={{ user: currentUser }}/>
-            <Tab.Screen name="Profile" component={ProfileScreen} initialParams={{ user: currentUser }} />
+            <Tab.Screen name="ProfileStack" component={ProfileStackNavigation} initialParams={{ user: currentUser }} />
+            {/* <Tab.Screen name="Profileedit" component={ProfileScreen} initialParams={{ user: currentUser }} /> */}
         </Tab.Navigator>
     );
 
@@ -81,9 +83,6 @@ const styles = StyleSheet.create({
     },
     spacer: {
         fontSize: 18,
-        padding: 30,
-        marginTop: 30,
-        paddingBottom: 3,
         // flexDirection: 'row'
 
     },

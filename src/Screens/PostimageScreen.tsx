@@ -55,13 +55,13 @@ export function PostImageScreen(props: Props) {
         // ${ user.uid }
         const storageRef = firebase.storage().ref('Photo');
         const remotePath = `${moment.now()}.jpg`;
-    
+
         const ref = storageRef.child(remotePath);
-       // const url = await ref.getDownloadURL();
+        // const url = await ref.getDownloadURL();
         const response = await fetch(pictureURI);
-       // const responses = await fetch(url); //←
+        // const responses = await fetch(url); //←
         const blob = await response.blob()
-       // const bloba = await responses.blob() //←
+        // const bloba = await responses.blob() //←
         const task = await ref.put(blob);
 
         const photoURI = await task.ref.getDownloadURL();
@@ -73,7 +73,7 @@ export function PostImageScreen(props: Props) {
             text: "",
             createdAt: firebase.firestore.Timestamp.now(),
             userId: currentUser.uid,
-            file:remotePath,
+            file: remotePath,
         } as Article;
         await docRef.set(newArticle);
         // キャッシュを削除
@@ -190,6 +190,7 @@ export function PostImageScreen(props: Props) {
     return (
         <KeyboardAwareScrollView>
             <View style={styles.container}>
+                <View style = {styles.buttoncontainer}>
                 <Pressable
                     onPress={openImagePickerAsync}>
                     <Icon
@@ -197,7 +198,6 @@ export function PostImageScreen(props: Props) {
                         name="photo"
                         size={30} />
                 </Pressable>
-                <View style={styles.buttonContainer}>
                     <Camera />
                     <TouchableOpacity
                         style={styles.saveButton}
@@ -205,6 +205,7 @@ export function PostImageScreen(props: Props) {
                     >
                         <Icon name="check" size={30} />
                     </TouchableOpacity>
+                
                 </View>
                 <View style={styles.previewContainer}>
                     <Preview />
@@ -288,19 +289,19 @@ const styles = StyleSheet.create({
         width: screenWidth * 0.8,
         height: screenWidth * 0.8 * 4 / 3,
     },
-    buttonContainer: {
-        flex: 1,
-        flexDirection: 'row',
-        justifyContent: 'space-around',
-        alignItems: 'center',
-        width: '100%',
+    // buttonContainer: {
+    //     flex: 1,
+    //     flexDirection: 'row',
+    //     justifyContent: 'space-around',
+    //     alignItems: 'center',
+    //     width: '100%',
 
-    },
+    // },
     saveButton: {
         // backgroundColor: '#77f',
         // padding: 5,
         // borderRadius: 10,
-        width: 120,
+        // width: 120,
         alignItems: 'center',
         // left: 80,
     },
@@ -316,13 +317,17 @@ const styles = StyleSheet.create({
         fontSize: 20,
     },
     button: {
-        padding: 20,
+        // padding: 20,
         borderRadius: 5,
     },
     Photobutton: {
         // flexDirection: 'row',
         // left: 80,
-        // paddingTop: 60,
-        alignItems: 'center',
+        // padding: 60,
+        // alignItems: 'center',
+    },
+    buttoncontainer : {
+        flexDirection: 'row',
+        marginTop:20,
     }
 });

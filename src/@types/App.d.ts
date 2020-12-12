@@ -14,10 +14,15 @@ type RootStackParamList = {
     SignUp: undefined;
 };
 
+type ProfileRootStackParamList = {
+    Profile: { user: signedInUser };
+    Profileedit: { user: signedInUser }
+};
+
 type MainTabParamList = {
     Home: {user: signedInUser};
     PostImage: {user: signedInUser};
-    Profile: { user: signedInUser };
+    ProfileStack: { user: signedInUser };
     Post: undefined;
     Profileedit: undefined;
 };

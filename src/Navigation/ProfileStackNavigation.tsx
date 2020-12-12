@@ -1,15 +1,13 @@
 import { StatusBar } from 'expo-status-bar';
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { NavigationContainer } from "@react-navigation/native";
+import { NavigationContainer, RouteProp } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import MainTabNavigation from "./src/Navigation/MainTabNavigation";
-// import ProfileeditScreen from "./src/Navigation/ProfileStackNavigation"
+import { BottomTabNavigationProp, createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+
 import "react-native-gesture-handler";
 //Screens.tsでまとめたものをimport
-import { HomeScreen, SigninScreen, SignupScreen, PostImageScreen, ProfileScreen, ProfileeditScreen } from "./src/Screens/Screens";
-import "./src/Fire";
+import { ProfileScreen, ProfileeditScreen } from "../Screens/Screens";
 // import { BottomTabBar } from 'react-navigation-tabs';
 // import { createBottomTabNavigator } from 'react-navigation-tabs';
 // import { Image } from "react-native-elements";
@@ -21,30 +19,37 @@ import "./src/Fire";
 
 // 
 // const Tab = createBottomTabNavigator();
-const Stack = createStackNavigator<RootStackParamList>();
+const Stack = createStackNavigator<ProfileRootStackParamList>();
 // const BottomTab = createBottomTabNavigator<RootBottomParamList>();
-export default function App() {
-  return (
-    <NavigationContainer>
-      <Stack.Navigator
-        initialRouteName="SignIn">
-        <Stack.Screen
-          name="Main"
-          component={MainTabNavigation}
-          options={{ headerShown: true}}
-        />
-        <Stack.Screen
-          name="SignIn"
-          component={SigninScreen}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="SignUp"
-          component={SignupScreen}
-          options={{ headerShown: false }}/>
+
+type Props = {
+    route: RouteProp<MainTabParamList, "ProfileStack">;
+    navigation: BottomTabNavigationProp<MainTabParamList, "ProfileStack">;
+}
+
+export default function ProfileStackNaigation(props: Props) {
+    const currentUser = props.route.params.user
+
+    // export default function App() {
+    return (
+
+        <Stack.Navigator
+            initialRouteName="Profile">
+            <Stack.Screen
+                name="Profile"
+                component={ProfileScreen}
+                options={{ headerShown: true }}
+                initialParams={{ user: currentUser }}
+            />
+            <Stack.Screen
+                name="Profileedit"
+                component={ProfileeditScreen}
+                options={{ headerShown: true }}
+                initialParams={{ user: currentUser }}
+            />
         </Stack.Navigator>
-    </NavigationContainer>
-  );
+
+    );
 }
 
 
@@ -103,10 +108,10 @@ export default function App() {
 
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
+    container: {
+        flex: 1,
+        backgroundColor: '#fff',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
 });

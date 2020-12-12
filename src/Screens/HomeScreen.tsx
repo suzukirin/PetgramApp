@@ -136,8 +136,9 @@ export function HomeScreen(props: Props) {
                         articles.unshift(newArticleContainer);
 
                     }
+                    setArticleList(articles.slice());
                 });
-                setArticleList(articles.slice());
+
             });
         /* この部分を追加 */
         return unsubscribe; //リスナーのデタッチ
@@ -234,8 +235,10 @@ export function HomeScreen(props: Props) {
         return (
 
             <TouchableOpacity onLongPress={() => handleLongPressPicture(item)}>
-                <Text>{item.name}</Text>
-                <Image style={{ width: 50, height: 50 }} source={{ uri: item.avatar }} />
+                <View style={styles.userContainer}>
+                    <Text style={styles.username} > {item.name} </Text>
+                    <Image style={{ width: 50, height: 50 }} source={{ uri: item.avatar }} />
+                </View>
                 <View style={styles.pictureInfoContainer}>
                     <Image style={styles.picture} source={{ uri: item.PhotoURI }} />
                     <Text style={styles.pictureTitle}>{item.title}</Text>
@@ -348,5 +351,12 @@ const styles = StyleSheet.create({
         // flexDirection: 'row'
 
     },
+    username: {
+        fontSize: 20,
+        marginTop: 10,
 
+    },
+    userContainer: {
+        flexDirection: 'row'
+    }
 });

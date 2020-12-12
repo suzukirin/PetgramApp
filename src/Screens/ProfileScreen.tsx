@@ -1,5 +1,5 @@
 import { StatusBar } from "expo-status-bar";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useFocusEffect, useIsFocused} from "@react-navigation/native";
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -26,11 +26,14 @@ import {
     TouchableOpacity,
     Dimensions,
     Pressable,
+    ListRenderItemInfo,
 } from 'react-native';
+import { FlatList } from "react-native-gesture-handler";
+
 
 type Props = {
-    navigation: BottomTabNavigationProp<MainTabParamList, 'Profile'>;
-    route: RouteProp<MainTabParamList, 'Profile'>;
+    navigation: StackNavigationProp<ProfileRootStackParamList>;
+    route: RouteProp<ProfileRootStackParamList, 'Profile'>;
 };
 // const screenWidth = Dimensions.get('screen').width
 
@@ -40,8 +43,10 @@ export function ProfileScreen(props: Props) {
     const [titleText, setTitleText] = useState('')
     const [pictureURI, setPictureURI] = useState('');
     const [userInfo, setUserinfo] = useState<UserInfo[]>([]);
+    const [articleList, setArticleList] = useState<Article[]>([]);
     // キャッシュ用の変数を追加
     const pictureURICache = React.useRef('');
+    const isFocused = useIsFocused();
 
     const getUserInfoDocRef = async () => {
         return await firebase.firestore().collection("User").doc();
@@ -59,10 +64,15 @@ export function ProfileScreen(props: Props) {
         const blob = await response.blob()
         // const bloba = await responses.blob() //←
         const task = await ref.put(blob);
-     
+
         const avatar = await task.ref.getDownloadURL();
 
-        const docRef = await getUserInfoDocRef();
+        // getUserInfoDocRef();
+        const query =await firebase.firestore().collection().doc
+        const snapshot =await query.get();
+        if(snapshot.empty){
+        const docRef = await firebase.firestore().collection("User").Where('User')
+
         const newUserInfo = {
             avatar: avatar,
             // emailaddress: string;
@@ -73,7 +83,11 @@ export function ProfileScreen(props: Props) {
             file: remotePath,
         } as UserInfo;
         await docRef.set(newUserInfo);
-
+        }else{    
+            const docID = snapshot.docs[0].id;
+            const docRef = firebase.firestore().collection("User");
+            docRef.set();
+    }
 
         // キャッシュを削除
         FileSystem.deleteAsync(pictureURI);
@@ -82,6 +96,7 @@ export function ProfileScreen(props: Props) {
 
         setPictureURI("");
     }
+
     React.useEffect(() => {
         return (() => {
             // キャッシュを削除
@@ -117,7 +132,7 @@ export function ProfileScreen(props: Props) {
         await savePictureInfoAsync(newPictureInfo);
 
         // キャッシュを削除
-        FileSystem.deleteAsync(pictureURI);
+        FileSystem.deleteAsync(<pictureURICache className="current"></pictureURICache>);
 
         // Homeへ
         //navigation.goBack();
@@ -125,7 +140,7 @@ export function ProfileScreen(props: Props) {
 
     const Preview = () => {
         return (
-            <Image style={styles.preview} source={{ uri: pictureURI}} />
+            <Image style={styles.preview} source={{ uri: pictureURI }} />
         );
     }
     interface SelectedImageInfo { //型を定義
@@ -157,10 +172,49 @@ export function ProfileScreen(props: Props) {
         if (pickerResult.cancelled === true) {
             return;
         } else {
-            setPictureURI(pickerResult.uri);    
+            setPictureURI(pickerResult.uri);
         }
     };
 
+    const getArticleListAsync = async () => {
+        const query = firebase
+            .firestore()
+            .collection("article")
+            .where("userId", "==", currentUser.uid);
+
+        const snapshot = await query.get();
+        const newArticleList = snapshot.docs.map((item)=>{
+            return item.data() as Article;
+        });
+        setArticleList(newArticleList);
+    }
+
+    useFocusEffect(
+        React.useCallback(() => {
+            if(isFocused) {
+                getArticleListAsync();                
+            }
+        }, [])
+    );
+    const renderArticle = ({ item }: ListRenderItemInfo<Article>) => {
+        return (
+
+            <TouchableOpacity >
+            {/* onLongPress={() => handleLongPressPicture(item)}> */}
+                <View >
+                {/* style={styles.pictureInfoContainer}> */}
+                    <Image style={styles.picture} source={{ uri: item.PhotoURI }} />
+                    <Text >
+                    {/* style={styles.pictureTitle}> */}
+                    {item.title}</Text>
+                    {/* <Text style={styles.timestamp}>撮影日時: {moment(item.createdAt).format('YYYY/MM/DD HH:mm:ss')}</Text> */}
+                </View>
+            </TouchableOpacity>
+        )
+    }
+    const handleAddButton = () => {
+        navigation.navigate('Profileedit', {user: currentUser});
+    }
     return (
         <KeyboardAwareScrollView>
             <View style={styles.container}>
@@ -168,6 +222,14 @@ export function ProfileScreen(props: Props) {
                     style={styles.titleInputConatiner}
                     behavior={Platform.OS == 'ios' ? 'padding' : 'height'}
                 >
+                    <TouchableOpacity
+                        onPress={handleAddButton}
+                    >
+                        <Icon
+                            name="plus-square-o"
+                            size={50}
+                        />
+                    </TouchableOpacity>
                     <TextInput
                         style={styles.titleInput}
                         placeholder="タイトル"
@@ -192,11 +254,12 @@ export function ProfileScreen(props: Props) {
                         <Text style={styles.buttonText}>キャンセル</Text>
                     </TouchableOpacity>
                 </View>
-                <Button
-                    title="Back"
-                    //onPress={() => navigation.goBack()}
-                    onPress={() => { }}
+                <FlatList
+                    data={articleList}
+                    renderItem={renderArticle}
+                    keyExtractor={(item) => `${item.createdAt}`}
                 />
+             
             </View>
         </KeyboardAwareScrollView >
     );
@@ -219,7 +282,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     titleInput: {
-        flex: 0.9,
+        // flex: 0.9,
         color: "#000",
         fontSize: 20,
         borderWidth: 2,
@@ -279,5 +342,9 @@ const styles = StyleSheet.create({
     logo: {
         width: 80,
         height: 80,
+    },
+    picture:{
+        width: screenWidth * 0.3,
+         height: screenWidth * 0.3
     }
 });

@@ -24,13 +24,14 @@ import {
     Pressable,
 } from 'react-native';
 
-// type Props = {
-//     navigation: StackNavigationProp<RootStackParamList, 'Profileedit'>;
-// };
+type Props = {
+    navigation: StackNavigationProp<ProfileRootStackParamList, 'Profileedit'>;
+};
 const screenWidth = Dimensions.get('screen').width
 
 
-export function ProfileeditScreen(/*{ navigation }: Props*/) {
+export function ProfileeditScreen({ navigation }: Props) {
+    // const navigation = useNavigation();
     const [titleText, setTitleText] = useState('')
     const [pictureURI, setPictureURI] = useState('');
     const [selectedImage, setSelectedImage] = React.useState<SelectedImageInfo | null>(null);
@@ -118,8 +119,12 @@ export function ProfileeditScreen(/*{ navigation }: Props*/) {
     };
 
     if (selectedImage === null) {
-        return <View></View>;
+        return <View>
+            <Text>edit screen</Text>
+        </View>;
     }
+
+    console.log('edit');
 
     return (
         <KeyboardAwareScrollView>
@@ -148,7 +153,7 @@ export function ProfileeditScreen(/*{ navigation }: Props*/) {
                     </TouchableOpacity>
                     <TouchableOpacity
                         style={styles.cancelButton}
-                        onPress={() => {/*navigation.goBack()*/}}
+                        onPress={() => {/*navigation.goBack()*/ }}
                     >
                         <Text style={styles.buttonText}>キャンセル</Text>
                     </TouchableOpacity>
@@ -156,7 +161,7 @@ export function ProfileeditScreen(/*{ navigation }: Props*/) {
                 <Button
                     title="Back"
                     //onPress={() => navigation.goBack()}
-                    onPress={() => {}}
+                    onPress={() => { }}
                 />
             </View>
         </KeyboardAwareScrollView >
