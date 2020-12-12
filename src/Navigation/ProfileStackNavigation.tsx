@@ -38,7 +38,7 @@ export default function ProfileStackNaigation(props: Props) {
             <Stack.Screen
                 name="Profile"
                 component={ProfileScreen}
-                options={{ headerShown: true }}
+                options={{ headerShown: false }}
                 initialParams={{ user: currentUser }}
             />
             <Stack.Screen
