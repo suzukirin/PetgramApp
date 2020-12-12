@@ -9,30 +9,49 @@ type signedInUser = {
 };
 type RootStackParamList = {
     //パラメータ :型
-    Main: undefined;
+    Main: { user: signedInUser };
     SignIn: undefined;
     SignUp: undefined;
-    PostImage: undefined;
-    Post: undefined;
-    Profile: undefined,
-    Profileedit: undefined,
 };
 
-type  Article = {
-    PhotoURI:string;
-    title:string;
+type MainTabParamList = {
+    Home: {user: signedInUser};
+    PostImage: {user: signedInUser};
+    Profile: { user: signedInUser };
+    Post: undefined;
+    Profileedit: undefined;
+};
+
+type Article = {
+    PhotoURI: string;
+    title: string;
     text: string;
     createdAt: firebase.firestore.Timestamp;
     userId: string;
-    file:string;
+    file: string;
 };
 
-type User = {
-    avatar:string;
-    emailaddress:string;
-    name:string;
-    userid:string;
+type UserInfo = {
+    avatar: string;
+    // emailaddress: string; //メアド編集機能つける時
+    name: string;    
+    userId: string;
+    text: string;
+    createdAt: firebase.firestore.Timestamp;
+    file: string;
 };
+
+type ArticleContainer = {
+    PhotoURI: string;
+    title: string;
+    text: string;
+    createdAt: firebase.firestore.Timestamp;
+    userId: string;
+    file: string;
+    avatar: string;
+    name: string; 
+};
+
 
 type Message = {
     text: string;

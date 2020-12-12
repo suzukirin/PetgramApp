@@ -1,5 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
-import { StackNavigationProp } from '@react-navigation/stack';
+import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
+import { RouteProp } from '@react-navigation/native';
 import Icon from "react-native-vector-icons/FontAwesome";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import * as FileSystem from 'expo-file-system';
@@ -27,14 +28,17 @@ import {
 
 
 type Props = {
-    navigation: StackNavigationProp<RootStackParamList, 'Main'>;
+    navigation: BottomTabNavigationProp<MainTabParamList, 'PostImage'>;
+    route: RouteProp<MainTabParamList, 'PostImage'>;
 };
 const screenWidth = Dimensions.get('screen').width
 
 
 
 
-export function PostImageScreen({ navigation }: Props) {
+export function PostImageScreen(props: Props) {
+    const navigation = props.navigation;
+    const currentUser = props.route.params.user;
     const [titleText, setTitleText] = useState('')
     const [pictureURI, setPictureURI] = useState('');
     const [selectedImage, setSelectedImage] = React.useState<SelectedImageInfo | undefined>();
@@ -44,6 +48,7 @@ export function PostImageScreen({ navigation }: Props) {
     const getArticleDocRef = async () => {
         return await firebase.firestore().collection("article").doc();
     };
+
     //send押した時CloudFirestoreに保存しつつ画面に追加
     const sendArticle = async () => {
 
@@ -67,7 +72,7 @@ export function PostImageScreen({ navigation }: Props) {
             title: titleText,
             text: "",
             createdAt: firebase.firestore.Timestamp.now(),
-            userId: "",
+            userId: currentUser.uid,
             file:remotePath,
         } as Article;
         await docRef.set(newArticle);
@@ -77,8 +82,6 @@ export function PostImageScreen({ navigation }: Props) {
         // Homeへ
         navigation.goBack();
 
-
-        
         setPictureURI("");
     }
 
@@ -98,7 +101,6 @@ export function PostImageScreen({ navigation }: Props) {
         pictureURICache.current = result.uri;
     };
     React.useEffect(() => {
-
         return (() => {
             // キャッシュを削除
             if (pictureURICache.current !== '') {      //空ではなかったらこの処理をします

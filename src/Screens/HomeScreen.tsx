@@ -27,6 +27,7 @@ import {
     ListRenderItemInfo,
     Pressable,
 } from 'react-native';
+import { userInfo } from 'os';
 
 
 
@@ -41,12 +42,12 @@ type Props = {
 
 
 
-// export function HomeScreen(props: Props) {
-export function HomeScreen() {
+export function HomeScreen(props: Props) {
+    // export function HomeScreen() {
     const [hasPermission, setHasPermission] = useState(false);
-    const [ArticleList, setArticleList] = useState<Article[]>([]);
+    const [ArticleList, setArticleList] = useState<ArticleContainer[]>([]);
 
-    const currentUser: signedInUser = { email: '', uid: '' };//props.route.params.user;
+    const currentUser = props.route.params.user;
     const navigation = useNavigation();
 
     const back = () => {
@@ -100,21 +101,43 @@ export function HomeScreen() {
     }, [navigation]);
     useEffect(() => {
         //この中をまるまる変更(関数getMessagesの中身をここに記述)
-        const article = [] as Article[];
+        const articles: ArticleContainer[] = [];
         /* const unsubscribe = の部分を追加 */
         const unsubscribe = firebase
             .firestore()
             .collection("article")
             .orderBy("createdAt", "desc")
             .onSnapshot((snapshot) => {
-                snapshot.docChanges().forEach((change) => {
+                snapshot.docChanges().forEach(async (change) => {
                     //変化の種類が"added"だったときの処理
                     if (change.type === "added") {
                         //今アプリにもっているarticleに取得した差分を追加
-                        article.unshift(change.doc.data() as Article);
+                        const article: Article = change.doc.data() as Article
+
+                        const query = firebase
+                            .firestore()
+                            .collection("User")
+                            .where("userId", "==", article.userId);
+
+                        const snapshot = await query.get();
+                        const user = snapshot.docs[0].data() as UserInfo;
+
+
+                        const newArticleContainer: ArticleContainer = {
+                            PhotoURI: article.PhotoURI,
+                            title: article.title,
+                            text: article.text,
+                            createdAt: article.createdAt,
+                            userId: article.userId,
+                            file: article.file,
+                            avatar: user.avatar,
+                            name: user.name,
+                        }
+                        articles.unshift(newArticleContainer);
+
                     }
-                    setArticleList(article.slice());
                 });
+                setArticleList(articles.slice());
             });
         /* この部分を追加 */
         return unsubscribe; //リスナーのデタッチ
@@ -139,8 +162,8 @@ export function HomeScreen() {
     // );
 
     // 画像情報の削除処理 + 画面更新
-    const removeArticleAsync = async (article: Article) => {
-        alert('test');
+    const removeArticleAsync = async (article: ArticleContainer) => {
+        // alert('test');
         try {
             // Create a reference to the file to delete
             const storageRef = firebase.storage().ref('Photo');
@@ -169,7 +192,7 @@ export function HomeScreen() {
 
     }
 
-    const removeArticleAndUpdateAsync = async (article: Article) => {
+    const removeArticleAndUpdateAsync = async (article: ArticleContainer) => {
         await removeArticleAsync(article);
 
     }
@@ -180,21 +203,26 @@ export function HomeScreen() {
     }
 
     // 写真を長押ししたときの処理
-    const handleLongPressPicture = (item: Article) => {
-        Alert.alert(
-            item.title,
-            '削除しますか？',
-            [
-                {
-                    text: 'キャンセル',
-                    style: 'cancel',
-                },
-                {
-                    text: '削除',
-                    onPress: () => { removeArticleAndUpdateAsync(item); }
-                }
-            ]
-        );
+    const handleLongPressPicture = (item: ArticleContainer) => {
+        if (currentUser.uid === item.userId) {
+            Alert.alert(
+                item.title,
+                '削除しますか？',
+                [
+                    {
+                        text: 'キャンセル',
+                        style: 'cancel',
+                    },
+                    {
+                        text: '削除',
+                        onPress: () => { removeArticleAndUpdateAsync(item); }
+                    }
+                ]
+            );
+
+        }
+
+
     }
 
     const UnPermission = () => {
@@ -202,9 +230,12 @@ export function HomeScreen() {
     }
 
     // FlatList内で表示する部分
-    const renderPictureInfo = ({ item }: ListRenderItemInfo<Article>) => {
+    const renderPictureInfo = ({ item }: ListRenderItemInfo<ArticleContainer>) => {
         return (
+
             <TouchableOpacity onLongPress={() => handleLongPressPicture(item)}>
+                <Text>{item.name}</Text>
+                <Image style={{ width: 50, height: 50 }} source={{ uri: item.avatar }} />
                 <View style={styles.pictureInfoContainer}>
                     <Image style={styles.picture} source={{ uri: item.PhotoURI }} />
                     <Text style={styles.pictureTitle}>{item.title}</Text>

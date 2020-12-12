@@ -1,18 +1,23 @@
 import React from 'react';
-import { HomeScreen, SigninScreen, SignupScreen, PostImageScreen, ProfileScreen ,} from "../Screens/Screens";
+import { HomeScreen, SigninScreen, SignupScreen, PostImageScreen, ProfileScreen, } from "../Screens/Screens";
 import { BottomTabBar, createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { useNavigation, RouteProp } from "@react-navigation/native";
+import { StackNavigationProp } from '@react-navigation/stack';
 import firebase from "firebase";
-import { TouchableOpacity, View ,Text ,StyleSheet} from 'react-native';
+import { TouchableOpacity, View, Text, StyleSheet } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
-const Tab = createBottomTabNavigator();
-// type HomeScreenRouteProps = RouteProp<RootStackParamList, "Home">;
-// type Props = {
-// route: HomeScreenRouteProps;
-// navigation: StackNavigationProp<RootStackParamList, 'Home'>;
-// }
-export default function MainTabNaigator() {
-    const navigation = useNavigation();
+const Tab = createBottomTabNavigator<MainTabParamList>();
+
+type MainTabRouteProps = RouteProp<RootStackParamList, "Main">;
+type Props = {
+    route: MainTabRouteProps;
+    navigation: StackNavigationProp<RootStackParamList, 'Main'>;
+}
+
+export default function MainTabNaigator(props: Props) {
+    const navigation = props.navigation;
+    const currentUser = props.route.params.user;
+
     const back = () => {
         navigation.goBack();
     };
@@ -42,20 +47,20 @@ export default function MainTabNaigator() {
                     >
                         <Text style={styles.spacer}>ログアウト</Text>
                     </TouchableOpacity>
-            
+
                 </View>
             ),
         });
     }, [navigation]);
     return (
         <Tab.Navigator>
-            <Tab.Screen name="Home" component={HomeScreen} />
-            <Tab.Screen name="PostImage" component={PostImageScreen} />
-            <Tab.Screen name="Profile" component={ProfileScreen} />
+            <Tab.Screen name="Home" component={HomeScreen} initialParams={{user : currentUser}}/>
+            <Tab.Screen name="PostImage" component={PostImageScreen} initialParams={{ user: currentUser }}/>
+            <Tab.Screen name="Profile" component={ProfileScreen} initialParams={{ user: currentUser }} />
         </Tab.Navigator>
     );
 
-}    
+}
 const styles = StyleSheet.create({
     addButton: {
         // position: 'absolute',

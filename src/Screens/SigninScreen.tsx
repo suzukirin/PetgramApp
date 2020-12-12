@@ -16,6 +16,7 @@ import { useNavigation } from "@react-navigation/native";
 import firebase from "firebase";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { updateIdentifier } from "typescript";
+import { userInfo } from "os";
 // import {fireConfig} from "../Fire";
 
 export function SigninScreen() {
@@ -24,7 +25,7 @@ export function SigninScreen() {
 
     const navigation = useNavigation();
     const toHome = (user: signedInUser) => {
-        navigation.navigate("Main");
+        navigation.navigate("Main", {user: user});
     };
     const toSignup = () => {
         navigation.navigate("SignUp");

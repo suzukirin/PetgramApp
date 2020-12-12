@@ -17,6 +17,7 @@ import firebase from "firebase";
 import Icon from "react-native-vector-icons/FontAwesome";
 
 
+
 export function SignupScreen() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");

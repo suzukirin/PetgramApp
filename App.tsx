@@ -40,24 +40,10 @@ export default function App() {
         <Stack.Screen
           name="SignUp"
           component={SignupScreen}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="PostImage"
-          component={PostImageScreen}
-        // options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="Profile"
-          component={ProfileScreen}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="Profileedit"
-          component={ProfileeditScreen}
-          options={{ headerShown: false }}
-        />
-      </Stack.Navigator>
+          options={{ headerShown: false }}/>
+        
+        
+        </Stack.Navigator>
     </NavigationContainer>
   );
 }
