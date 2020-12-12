@@ -54,6 +54,7 @@ export function ProfileScreen(props: Props) {
     //send押した時CloudFirestoreに保存しつつ画面に追加
     const sendUserInfo = async () => {
         // ${ user.uid }
+        // 画像のアップロード
         const storageRef = firebase.storage().ref('Avatar');
         const remotePath = `${moment.now()}.jpg`;
 
@@ -64,16 +65,17 @@ export function ProfileScreen(props: Props) {
         const blob = await response.blob()
         // const bloba = await responses.blob() //←
         const task = await ref.put(blob);
-
         const avatar = await task.ref.getDownloadURL();
 
         // getUserInfoDocRef();
-        const query =await firebase.firestore().collection().doc
+          // ログイン中のユーザーデータがあるか検索
+        const query = await firebase.firestore().collection('User').where('userId', '==', currentUser.uid);
         const snapshot =await query.get();
-        if(snapshot.empty){
-        const docRef = await firebase.firestore().collection("User").Where('User')
 
-        const newUserInfo = {
+        if(snapshot.empty){
+        // 検索結果が空なら新規作成
+            const docRef = await firebase.firestore().collection("User").doc();
+            const newUserInfo = {
             avatar: avatar,
             // emailaddress: string;
             userId: currentUser.uid,
@@ -84,18 +86,37 @@ export function ProfileScreen(props: Props) {
         } as UserInfo;
         await docRef.set(newUserInfo);
         }else{    
+        // すでにデータが有ったら上書き
             const docID = snapshot.docs[0].id;
-            const docRef = firebase.firestore().collection("User");
-            docRef.set();
-    }
-
+            let userInfo = snapshot.docs[0].data() as UserInfo;
+            //古いアイコンを削除
+            storageRef.child(userInfo.file).delete();
+            userInfo.name = titleText;
+            userInfo.avatar = avatar;
+            userInfo.file = remotePath;
+            const docRef = firebase.firestore().collection("User").doc(docID);
+            docRef.set(userInfo);
+        }
         // キャッシュを削除
         FileSystem.deleteAsync(pictureURI);
         // Homeへ
-        navigation.goBack();
-
+        props.navigation.goBack();
         setPictureURI("");
-    }
+
+        // キャッシュを削除
+        FileSystem.deleteAsync(pictureURICache.current);
+        //         const docRef = firebase.firestore().collection("User");
+        //         docRef.set();
+        // }
+        
+        
+        
+        // Homeへ
+        navigation.goBack();
+        
+        setPictureURI("");
+    };
+    
 
     React.useEffect(() => {
         return (() => {
@@ -132,7 +153,7 @@ export function ProfileScreen(props: Props) {
         await savePictureInfoAsync(newPictureInfo);
 
         // キャッシュを削除
-        FileSystem.deleteAsync(<pictureURICache className="current"></pictureURICache>);
+        FileSystem.deleteAsync(pictureURICache.current);
 
         // Homeへ
         //navigation.goBack();
