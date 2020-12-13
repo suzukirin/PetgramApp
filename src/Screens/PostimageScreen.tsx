@@ -176,7 +176,6 @@ export function PostImageScreen(props: Props) {
             alert("カメラロールへのアクセス許可が必要です！");
             return;
         }
-
         let pickerResult = await ImagePicker.launchImageLibraryAsync(({ aspect: [3, 4], allowsEditing: true }));
         // console.log(pickerResult);
         if (pickerResult.cancelled === true) {

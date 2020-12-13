@@ -37,6 +37,7 @@ type Props = {
 };
 // const screenWidth = Dimensions.get('screen').width
 
+
 export function ProfileeditScreen(props: Props) {
     const navigation = props.navigation;
     const currentUser = props.route.params.user;
