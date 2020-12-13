@@ -1,5 +1,5 @@
 import { StatusBar } from "expo-status-bar";
-import { useNavigation, useFocusEffect, useIsFocused} from "@react-navigation/native";
+import { useNavigation, useFocusEffect, useIsFocused } from "@react-navigation/native";
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -12,7 +12,6 @@ import firebase from "firebase";
 import logo from '../assets/images/user.png';
 import * as MediaLibrary from 'expo-media-library';
 import { savePictureInfoAsync } from './Store';
-// import { Thumbnail } from "native-base";
 import React, { useState } from 'react';
 import {
     Button,
@@ -29,6 +28,7 @@ import {
     ListRenderItemInfo,
 } from 'react-native';
 import { FlatList } from "react-native-gesture-handler";
+import { profile } from "console";
 
 
 type Props = {
@@ -51,72 +51,67 @@ export function ProfileScreen(props: Props) {
     const getUserInfoDocRef = async () => {
         return await firebase.firestore().collection("User").doc();
     };
-    //send押した時CloudFirestoreに保存しつつ画面に追加
-    const sendUserInfo = async () => {
-        // ${ user.uid }
-        // 画像のアップロード
-        const storageRef = firebase.storage().ref('Avatar');
-        const remotePath = `${moment.now()}.jpg`;
+    // //send押した時CloudFirestoreに保存しつつ画面に追加
+    // const sendUserInfo = async () => {
+    //     // ${ user.uid }
+    //     // 画像のアップロード
+    //     const storageRef = firebase.storage().ref('Avatar');
+    //     const remotePath = `${moment.now()}.jpg`;
 
-        const ref = storageRef.child(remotePath);
-        // const url = await ref.getDownloadURL();
-        const response = await fetch(pictureURI);
-        // const responses = await fetch(url); //←
-        const blob = await response.blob()
-        // const bloba = await responses.blob() //←
-        const task = await ref.put(blob);
-        const avatar = await task.ref.getDownloadURL();
+    //     const ref = storageRef.child(remotePath);
+    //     // const url = await ref.getDownloadURL();
+    //     const response = await fetch(pictureURI);
+    //     // const responses = await fetch(url); //←
+    //     const blob = await response.blob()
+    //     // const bloba = await responses.blob() //←
+    //     const task = await ref.put(blob);
+    //     const avatar = await task.ref.getDownloadURL();
 
-        // getUserInfoDocRef();
-          // ログイン中のユーザーデータがあるか検索
-        const query = await firebase.firestore().collection('User').where('userId', '==', currentUser.uid);
-        const snapshot =await query.get();
+    //     // getUserInfoDocRef();
+    //       //  ユーザーidをドキュメントのidとする
+    //     const docRef = await firebase.firestore().collection('User').doc(currentUser.uid);
+    //     const doc = await docRef.get();
+    //     // const snapshot =await query.get();
 
-        if(snapshot.empty){
-        // 検索結果が空なら新規作成
-            const docRef = await firebase.firestore().collection("User").doc();
-            const newUserInfo = {
-            avatar: avatar,
-            // emailaddress: string;
-            userId: currentUser.uid,
-            name: titleText,
-            text: "",
-            createdAt: firebase.firestore.Timestamp.now(),
-            file: remotePath,
-        } as UserInfo;
-        await docRef.set(newUserInfo);
-        }else{    
-        // すでにデータが有ったら上書き
-            const docID = snapshot.docs[0].id;
-            let userInfo = snapshot.docs[0].data() as UserInfo;
-            //古いアイコンを削除
-            storageRef.child(userInfo.file).delete();
-            userInfo.name = titleText;
-            userInfo.avatar = avatar;
-            userInfo.file = remotePath;
-            const docRef = firebase.firestore().collection("User").doc(docID);
-            docRef.set(userInfo);
-        }
-        // キャッシュを削除
-        FileSystem.deleteAsync(pictureURI);
-        // Homeへ
-        props.navigation.goBack();
-        setPictureURI("");
+    //     if(doc.exists === false){
+    //     // 検索結果が空なら新規作成
+    //         const newUserInfo = {
+    //             avatar: avatar,
+    //             // emailaddress: string;
+    //             userId: currentUser.uid,
+    //             name: titleText,
+    //             text: "",
+    //             createdAt: firebase.firestore.Timestamp.now(),
+    //             file: remotePath,
+    //         } as UserInfo;
+    //         await docRef.set(newUserInfo);
+    //     }else{    
+    //     // すでにデータが有ったら上書き
+    //         const userInfo = doc.data() as UserInfo;
+    //         //古いアイコンを削除
+    //         storageRef.child(userInfo.file).delete();
+    //         docRef.update({'avatar': avatar, 'name': titleText, 'file': remotePath});
+    //     }
+    //     // キャッシュを削除
+    //     FileSystem.deleteAsync(pictureURI);
+    //     // Homeへ
+    //     props.navigation.goBack();
+    //     setPictureURI("");
 
-        // キャッシュを削除
-        FileSystem.deleteAsync(pictureURICache.current);
-        //         const docRef = firebase.firestore().collection("User");
-        //         docRef.set();
-        // }
-        
-        
-        
-        // Homeへ
-        navigation.goBack();
-        
-        setPictureURI("");
-    };
-    
+    //     // キャッシュを削除
+    //     FileSystem.deleteAsync(pictureURICache.current);
+    //     //         const docRef = firebase.firestore().collection("User");
+    //     //         docRef.set();
+    //     // }
+
+
+
+    //     // Homeへ
+    //     navigation.goBack();
+
+    //     setPictureURI("");
+    // };
+
 
     React.useEffect(() => {
         return (() => {
@@ -204,16 +199,28 @@ export function ProfileScreen(props: Props) {
             .where("userId", "==", currentUser.uid);
 
         const snapshot = await query.get();
-        const newArticleList = snapshot.docs.map((item)=>{
+        const newArticleList = snapshot.docs.map((item) => {
             return item.data() as Article;
         });
         setArticleList(newArticleList);
     }
 
+
+    const getUserInfoAsync = async () => {
+        const docRef = await firebase.firestore().collection('User').doc(currentUser.uid);
+        const doc = await docRef.get();
+        const userInfo = doc.data() as UserInfo;
+        setTitleText(userInfo.name);
+        setPictureURI(userInfo.avatar);
+    }
+
+
+
     useFocusEffect(
         React.useCallback(() => {
-            if(isFocused) {
-                getArticleListAsync();                
+            if (isFocused) {
+                getArticleListAsync();
+                getUserInfoAsync();
             }
         }, [])
     );
@@ -221,20 +228,20 @@ export function ProfileScreen(props: Props) {
         return (
 
             <TouchableOpacity >
-            {/* onLongPress={() => handleLongPressPicture(item)}> */}
+                {/* onLongPress={() => handleLongPressPicture(item)}> */}
                 <View >
-                {/* style={styles.pictureInfoContainer}> */}
+                    {/* style={styles.pictureInfoContainer}> */}
                     <Image style={styles.picture} source={{ uri: item.PhotoURI }} />
                     <Text >
-                    {/* style={styles.pictureTitle}> */}
-                    {item.title}</Text>
+                        {/* style={styles.pictureTitle}> */}
+                        {item.title}</Text>
                     {/* <Text style={styles.timestamp}>撮影日時: {moment(item.createdAt).format('YYYY/MM/DD HH:mm:ss')}</Text> */}
                 </View>
             </TouchableOpacity>
         )
     }
     const handleAddButton = () => {
-        navigation.navigate('Profileedit', {user: currentUser});
+        navigation.navigate('Profileedit', { user: currentUser });
     }
     return (
         <KeyboardAwareScrollView>
@@ -243,44 +250,52 @@ export function ProfileScreen(props: Props) {
                     style={styles.titleInputConatiner}
                     behavior={Platform.OS == 'ios' ? 'padding' : 'height'}
                 >
+
                     <TouchableOpacity
                         onPress={handleAddButton}
+                        // style = {{left:100}}
                     >
-                        <Icon
-                            name="plus-square-o"
-                            size={50}
-                        />
+                        <View>
+                            <Text style={styles.profileedit}>プロフィールを編集</Text>
+                        </View>
                     </TouchableOpacity>
-                    <TextInput
-                        style={styles.titleInput}
-                        placeholder="タイトル"
-                        onChangeText={value => setTitleText(value)}
-                        maxLength={100}
-                    />
+
+                    {/* style={styles.titleInput} */}
+
+                    <Text style={styles.username}>{titleText}</Text>
+
+
                 </KeyboardAvoidingView>
                 <View style={styles.previewContainer}>
                     {pictureURI ? <Preview /> : <Camera />}
                 </View>
-                <View style={styles.buttonContainer}>
-                    <TouchableOpacity
+                {/* <View style={styles.buttonContainer}> */}
+                {/* <TouchableOpacity
                         style={styles.saveButton}
                         onPress={sendUserInfo}
                     >
                         <Text style={styles.buttonText}>保存</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
+                    </TouchableOpacity> */}
+                {/* <TouchableOpacity
                         style={styles.cancelButton}
-                        onPress={() => {/*navigation.goBack()*/ }}
-                    >
-                        <Text style={styles.buttonText}>キャンセル</Text>
-                    </TouchableOpacity>
-                </View>
+                        onPress={() => {/*navigation.goBack()*/ }
+                {/* > */}
+                {/* <Text style={styles.buttonText}>キャンセル</Text> */}
+                {/* </TouchableOpacity> */}
+                {/* </View> */}
+
+
+                {/* <View>
+                    {items.map((item) => (
+                        <Hello name={item.name} color={item.color} />
+                    ))}
+                    </View> */}
+
                 <FlatList
                     data={articleList}
                     renderItem={renderArticle}
                     keyExtractor={(item) => `${item.createdAt}`}
                 />
-             
             </View>
         </KeyboardAwareScrollView >
     );
@@ -299,7 +314,7 @@ const styles = StyleSheet.create({
     // ココから追加
     titleInputConatiner: {
         flex: 1,
-        flexDirection: "row",
+        // flexDirection: "row",
         alignItems: 'center',
     },
     titleInput: {
@@ -364,8 +379,22 @@ const styles = StyleSheet.create({
         width: 80,
         height: 80,
     },
-    picture:{
+    picture: {
         width: screenWidth * 0.3,
-         height: screenWidth * 0.3
+        height: screenWidth * 0.3
+    },
+    profileedit: {
+        fontSize: 15,
+        // paddingLeft:200,
+        padding: 10,
+        borderWidth: 1,
+        borderRadius: 20,
+        left:100,
+        marginTop: 10,
+    },
+    username: {
+        fontSize: 30,
+        padding: 15,
+        // fontWeight:20,
     }
 });

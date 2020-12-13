@@ -9,6 +9,8 @@ import * as ImagePicker from 'expo-image-picker';
 import moment from "moment";
 import { PostImageScreen, ProfileScreen } from "./Screens";
 import firebase from "firebase";
+import heart from '../assets/images/heart.jpg';
+import com from '../assets/images/comment.png';
 import {
     StyleSheet,
     Text,
@@ -28,6 +30,7 @@ import {
     Pressable,
 } from 'react-native';
 import { userInfo } from 'os';
+import { isWhiteSpaceLike } from 'typescript';
 
 
 
@@ -236,11 +239,18 @@ export function HomeScreen(props: Props) {
 
             <TouchableOpacity onLongPress={() => handleLongPressPicture(item)}>
                 <View style={styles.userContainer}>
+                    <Image 
+                            source={{ uri: item.avatar }}
+                            style ={styles.avatar}
+                    />
                     <Text style={styles.username} > {item.name} </Text>
-                    <Image style={{ width: 50, height: 50 }} source={{ uri: item.avatar }} />
                 </View>
                 <View style={styles.pictureInfoContainer}>
                     <Image style={styles.picture} source={{ uri: item.PhotoURI }} />
+                    <View style = { styles.iconContainer}>
+                    <Image source={heart} style={styles.heart} />
+                    <Image source={com} style={styles.com} />
+                    </View>
                     <Text style={styles.pictureTitle}>{item.title}</Text>
                     {/* <Text style={styles.timestamp}>撮影日時: {moment(item.createdAt).format('YYYY/MM/DD HH:mm:ss')}</Text> */}
                 </View>
@@ -249,26 +259,27 @@ export function HomeScreen(props: Props) {
     }
 
     // FlatList部分
-    const PictureDiaryList = () => {
-        return (
-            <View style={{ flex: 1 }}>
-                {/* <FlatList */}
-                {/* data={pictureInfoList} */}
-                {/* renderItem={renderPictureInfo} */}
-                {/* keyExtractor={(item) => `${item.createdAt}`} */}
-                {/* /> */}
-                {/* <TouchableOpacity */}
-                {/* style={styles.addButton}
-                                onPress={handleAddButton}
-                            >  */}
-                {/* <Icon style={styles.addButtonIcon} name="plus" size={50} /> */}
-                {/* </TouchableOpacity> */}
-            </View>
-        )
-    };
+    // const PictureDiaryList = () => {
+    //     return (
+    //         // <View style={{ flex: 1 }}>
+    //             {/* <FlatList */}
+    //             {/* data={pictureInfoList} */}
+    //             {/* renderItem={renderPictureInfo} */}
+    //             {/* keyExtractor={(item) => `${item.createdAt}`} */}
+    //             {/* /> */}
+    //             {/* <TouchableOpacity */}
+    //             {/* style={styles.addButton}
+    //                             onPress={handleAddButton}
+    //                         >  */}
+    //             {/* <Icon style={styles.addButtonIcon} name="plus" size={50} /> */}
+    //             {/* </TouchableOpacity> */}
+    //         </View>
+    //     )
+    // };
 
     return (
-        <SafeAreaView >
+        <SafeAreaView style={{ backgroundColor: '#fff',}} >
+            <Text style={styles.titlename}>Petgram<Icon name="github" size={45}  /></Text>
             <FlatList
                 data={ArticleList}
                 renderItem={renderPictureInfo}
@@ -306,18 +317,20 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         borderColor: 'black',
-        borderWidth: 2,
+        // borderTopWidth: 1,
+        // borderBottomWidth: 1,
         borderRadius: 10,
-        padding: 5,
+        padding: 20,
         margin: 5,
+        backgroundColor: '#fff',
     },
     picture: {
         // 横の幅に合わせて3:4
         // width: screenWidth * 0.8,
         // height: screenWidth * 0.3 * 4 / 3,
-        width: screenWidth * 0.8,
+        width: screenWidth * 1,
         height: screenWidth * 0.8 * 4 / 3,
-        marginTop: 30,
+        // marginTop: 30,
 
     },
     pictureTitle: {
@@ -352,11 +365,41 @@ const styles = StyleSheet.create({
 
     },
     username: {
-        fontSize: 20,
-        marginTop: 10,
+        fontSize: 25,
+        marginTop: 38,
+        marginRight:10,
+        
 
     },
     userContainer: {
-        flexDirection: 'row'
+        flexDirection: 'row',
+        backgroundColor: '#fff',
+    },
+    avatar:{
+        width: 50,
+        height: 50,
+        borderRadius:50,
+        marginLeft:10,
+        marginTop: 30,
+    },
+    titlename :{
+        fontSize:30,
+        backgroundColor: '#fff',
+        padding:15,
+    },
+    heart :{
+        width:30,
+        height:30,
+        right:140,
+        marginTop:10,
+    },
+    com :{
+        width: 50,
+        height: 50,
+        right: 130,
+        marginTop: 0,
+    },
+    iconContainer :{
+        flexDirection: 'row',
     }
 });

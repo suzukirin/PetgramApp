@@ -55,7 +55,7 @@ export default function MainTabNaigator(props: Props) {
     }, [navigation]);
     return (
         <Tab.Navigator>
-            <Tab.Screen name="Home" component={HomeScreen} initialParams={{user : currentUser}}/>
+            <Tab.Screen name="Home" component={HomeScreen}  initialParams={{user : currentUser}}/>
             <Tab.Screen name="PostImage" component={PostImageScreen} initialParams={{ user: currentUser }}/>
             <Tab.Screen name="ProfileStack" component={ProfileStackNavigation} initialParams={{ user: currentUser }} />
             {/* <Tab.Screen name="Profileedit" component={ProfileScreen} initialParams={{ user: currentUser }} /> */}

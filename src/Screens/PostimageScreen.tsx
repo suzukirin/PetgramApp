@@ -177,7 +177,7 @@ export function PostImageScreen(props: Props) {
             return;
         }
 
-        let pickerResult = await ImagePicker.launchImageLibraryAsync();
+        let pickerResult = await ImagePicker.launchImageLibraryAsync(({ aspect: [3, 4], allowsEditing: true }));
         // console.log(pickerResult);
         if (pickerResult.cancelled === true) {
             return;
@@ -188,7 +188,7 @@ export function PostImageScreen(props: Props) {
         // setSelectedImage({ localUri: pickerResult.uri });
     };
     return (
-        <KeyboardAwareScrollView>
+        <KeyboardAwareScrollView style={{backgroundColor: '#fff'}}>
             <View style={styles.container}>
                 <View style = {styles.buttoncontainer}>
                 <Pressable
@@ -218,7 +218,7 @@ export function PostImageScreen(props: Props) {
                 >
                     <TextInput
                         style={styles.titleInput}
-                        placeholder="キャプションを入力"
+                        placeholder="  キャプションを入力  "
                         multiline
                         onChangeText={value => setTitleText(value)}
                         maxLength={40}
@@ -256,15 +256,20 @@ const styles = StyleSheet.create({
         flex: 1,
         // flexDirection: "row",
         alignItems: 'center',
-        width: "80%",
+        padding:100,
     },
     titleInput: {
         //flex: 0.9,
         color: "#000",
         fontSize: 20,
         borderWidth: 1,
+        backgroundColor: '#f0f8ff',
+        width: "800%",
+        height: "50%",
+        padding:50,
+
+        
         // borderRadius: 10,
-        backgroundColor: '#fff',
         //marginTop: 20,
         //marginBottom: 20,
         //    padding: 60,
@@ -289,14 +294,14 @@ const styles = StyleSheet.create({
         width: screenWidth * 0.8,
         height: screenWidth * 0.8 * 4 / 3,
     },
-    // buttonContainer: {
-    //     flex: 1,
-    //     flexDirection: 'row',
-    //     justifyContent: 'space-around',
-    //     alignItems: 'center',
-    //     width: '100%',
+    buttonContainer: {
+        flex: 1,
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        alignItems: 'center',
+        width: '100%',
 
-    // },
+    },
     saveButton: {
         // backgroundColor: '#77f',
         // padding: 5,

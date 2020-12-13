@@ -64,6 +64,8 @@ type Message = {
     userId: string;
 };
 declare module "*.png";
+declare module "*.jpg";
+
 // interface SelectedImageInfo { //型を定義
 //     localUri: string;
 // }

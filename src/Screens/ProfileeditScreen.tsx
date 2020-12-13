@@ -68,13 +68,13 @@ export function ProfileeditScreen(props: Props) {
         const avatar = await task.ref.getDownloadURL();
 
         // getUserInfoDocRef();
-        // ログイン中のユーザーデータがあるか検索
-        const query = await firebase.firestore().collection('User').where('userId', '==', currentUser.uid);
-        const snapshot = await query.get();
+        //  ユーザーidをドキュメントのidとする
+        const docRef = await firebase.firestore().collection('User').doc(currentUser.uid);
+        const doc = await docRef.get();
+        // const snapshot =await query.get();
 
-        if (snapshot.empty) {
+        if (doc.exists === false) {
             // 検索結果が空なら新規作成
-            const docRef = await firebase.firestore().collection("User").doc();
             const newUserInfo = {
                 avatar: avatar,
                 // emailaddress: string;
@@ -87,15 +87,10 @@ export function ProfileeditScreen(props: Props) {
             await docRef.set(newUserInfo);
         } else {
             // すでにデータが有ったら上書き
-            const docID = snapshot.docs[0].id;
-            let userInfo = snapshot.docs[0].data() as UserInfo;
+            const userInfo = doc.data() as UserInfo;
             //古いアイコンを削除
             storageRef.child(userInfo.file).delete();
-            userInfo.name = titleText;
-            userInfo.avatar = avatar;
-            userInfo.file = remotePath;
-            const docRef = firebase.firestore().collection("User").doc(docID);
-            docRef.set(userInfo);
+            docRef.update({ 'avatar': avatar, 'name': titleText, 'file': remotePath });
         }
         // キャッシュを削除
         FileSystem.deleteAsync(pictureURI);
@@ -118,6 +113,7 @@ export function ProfileeditScreen(props: Props) {
     };
 
 
+
     React.useEffect(() => {
         return (() => {
             // キャッシュを削除
@@ -130,16 +126,16 @@ export function ProfileeditScreen(props: Props) {
 
     // 保存ボタンの処理
     const saveAsync = async () => {
-        // タイトルが設定されていないとアラート
-        if (titleText === '') {
-            alert('タイトルを入力してください');
-            return;
-        }
-        // 写真が設定されていないとアラート
-        if (pictureURI === '') {
-            alert('写真が有りません');
-            return;
-        }
+        // // タイトルが設定されていないとアラート
+        // if (titleText === '') {
+        //     alert('タイトルを入力してください');
+        //     return;
+        // }
+        // // 写真が設定されていないとアラート
+        // if (pictureURI === '') {
+        //     alert('写真が有りません');
+        //     return;
+        // }
 
         // カメラロールへ画像を保存
         const asset = await MediaLibrary.createAssetAsync(pictureURI);
@@ -237,50 +233,52 @@ export function ProfileeditScreen(props: Props) {
         navigation.navigate('Profileedit', { user: currentUser });
     }
     return (
-        <KeyboardAwareScrollView>
+        <KeyboardAwareScrollView style={{ backgroundColor: '#fff',}}>
             <View style={styles.container}>
                 <KeyboardAvoidingView
                     style={styles.titleInputConatiner}
                     behavior={Platform.OS == 'ios' ? 'padding' : 'height'}
                 >
-                    <TouchableOpacity
+                    {/* <TouchableOpacity
                         onPress={handleAddButton}
                     >
                         <Icon
                             name="plus-square-o"
                             size={50}
                         />
-                    </TouchableOpacity>
-                    <TextInput
-                        style={styles.titleInput}
-                        placeholder="タイトル"
-                        onChangeText={value => setTitleText(value)}
-                        maxLength={100}
-                    />
-                </KeyboardAvoidingView>
+                    </TouchableOpacity> */}
+            <View style={styles.profileContainer}>
                 <View style={styles.previewContainer}>
                     {pictureURI ? <Preview /> : <Camera />}
                 </View>
+                    <TextInput
+                        style={styles.titleInput}
+                        placeholder="Name"
+                        onChangeText={value => setTitleText(value)}
+                        maxLength={20}
+                    />
+                </View>
+                </KeyboardAvoidingView>
+
                 <View style={styles.buttonContainer}>
                     <TouchableOpacity
                         style={styles.saveButton}
                         onPress={sendUserInfo}
                     >
-                        <Text style={styles.buttonText}>保存</Text>
+                        <Icon name="check" size={30} />
                     </TouchableOpacity>
-                    <TouchableOpacity
+                    {/* <TouchableOpacity
                         style={styles.cancelButton}
-                        onPress={() => {/*navigation.goBack()*/ }}
-                    >
-                        <Text style={styles.buttonText}>キャンセル</Text>
-                    </TouchableOpacity>
+                        onPress={() => {/*navigation.goBack()*/ }
+                    {/* > */}
+                        {/* <Text style={styles.buttonText}>キャンセル</Text> */}
+                    {/* </TouchableOpacity>  */}
                 </View>
-                <FlatList
+                {/* <FlatList
                     data={articleList}
                     renderItem={renderArticle}
                     keyExtractor={(item) => `${item.createdAt}`}
-                />
-
+                /> */}
             </View>
         </KeyboardAwareScrollView >
     );
@@ -301,6 +299,7 @@ const styles = StyleSheet.create({
         flex: 1,
         flexDirection: "row",
         alignItems: 'center',
+        backgroundColor: '#fff',
     },
     titleInput: {
         // flex: 0.9,
@@ -309,7 +308,11 @@ const styles = StyleSheet.create({
         borderWidth: 2,
         borderRadius: 10,
         backgroundColor: '#fff',
+        marginTop:50,
         padding: 3,
+        width:140,
+        height:40,
+        right:40,
     },
     cameraButton: {
         width: 120,
@@ -321,10 +324,12 @@ const styles = StyleSheet.create({
         right: 120,
     },
     previewContainer: {
-        flex: 7,
+        // flex: 7,
         justifyContent: 'center',
         alignItems: 'center',
         borderRadius: 10,
+        left:50,
+        marginTop:20,
     },
     preview: {
         // width: screenWidth * 0.8,
@@ -338,15 +343,13 @@ const styles = StyleSheet.create({
     },
     buttonContainer: {
         flex: 1,
-        flexDirection: 'row',
+        // flexDirection: 'row',
         justifyContent: 'space-around',
-        alignItems: 'center',
-        width: '100%',
+        // alignItems: 'center',
+        // width: '100%',
     },
     saveButton: {
-        backgroundColor: '#77f',
         padding: 5,
-        borderRadius: 10,
         width: 120,
         alignItems: 'center',
     },
@@ -367,5 +370,8 @@ const styles = StyleSheet.create({
     picture: {
         width: screenWidth * 0.3,
         height: screenWidth * 0.3
+    },
+    profileContainer : {
+        flexDirection: 'row',
     }
 });
